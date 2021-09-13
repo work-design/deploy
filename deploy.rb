@@ -17,7 +17,6 @@ module Deploy
     'vendor/bundle'
   ].freeze
   SHARED_FILES = [
-    'config/database.yml',
     'config/credentials/production.key'
   ].freeze
   INIT_DIRS = [
@@ -110,5 +109,5 @@ OptionParser.new do |opts|
 end.parse!
 
 if $0 == __FILE__
-  Deploy.exec_cmds(options[:env], added_cmds: 'systemctl --user restart sidekiq_shuren')
+  Deploy.exec_cmds(options[:env])
 end
