@@ -9,15 +9,12 @@ module Deploy
   MOVED_DIRS = [
     'log',
     'tmp',
-    'storage',
-    'node_modules'
   ]
   SHARED_DIRS = [
-    'public/assets_rails',
+    'public/assets',
     'vendor/bundle'
   ].freeze
   SHARED_FILES = [
-    'config/database.yml',
     'config/credentials/production.key'
   ].freeze
   INIT_DIRS = [
@@ -35,18 +32,16 @@ module Deploy
     OpenSSL::HMAC.hexdigest('sha1', RailsCom.config.github_hmac_key, data)
   end
 
-  def init(root = Pathname.pwd)
+  def init_shared_paths(root = Pathname.pwd.join('../shared'))
     dirs = []
-    shared = root.join('../shared')
-    dirs += MOVED_DIRS.map { |dir| shared.join(dir) }
-    dirs += SHARED_DIRS.map { |dir| shared.join(dir) }
-    dirs += INIT_DIRS.map { |dir| shared.join(dir) }
+    dirs += MOVED_DIRS.map { |dir| root.join(dir) }
+    dirs += SHARED_DIRS.map { |dir| root.join(dir) }
+    dirs += INIT_DIRS.map { |dir| root.join(dir) }
     FileUtils.mkdir_p dirs
 
     SHARED_FILES.map do |path|
-      `touch #{shared.join(path)}`
+      `touch #{root.join(path)}`
     end
-    ln_shared_paths(root)
   end
 
   def ln_shared_paths(root = Pathname.pwd)
@@ -70,7 +65,7 @@ module Deploy
 
   def exec_cmds(env, added_cmds: [], **options)
     cmds = []
-    cmds << 'git pull'
+    cmds << 'git pull' #  --recurse-submodules
     cmds << 'bundle install'
     cmds << "RAILS_ENV=#{env} bundle exec rake db:migrate"
     cmds << 'bundle exec pumactl restart'
@@ -110,5 +105,5 @@ OptionParser.new do |opts|
 end.parse!
 
 if $0 == __FILE__
-  Deploy.exec_cmds(options[:env], added_cmds: 'systemctl --user restart sidekiq_shuren')
+  Deploy.exec_cmds(options[:env], added_cmds: 'systemctl --user restart meal_job')
 end
