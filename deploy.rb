@@ -77,10 +77,11 @@ module Deploy
 
   def exec_cmd(cmd)
     Open3.popen2e(cmd) do |_, output, thread|
-      logger.debug "=====> #{cmd} (PID: #{thread.pid})"
+      logger.debug "\e[35m#{cmd} (PID: #{thread.pid})\e[0m"
       output.each_line do |line|
-        logger.debug line
+        logger.debug line.chomp
       end
+      puts "\n"
     end
   end
 
