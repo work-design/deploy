@@ -1,11 +1,11 @@
 [Unit]
-Description=Good job for Meal design
+Description=Solid Queue for Work design
 After=syslog.target network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/ubuntu/web/meal_design/current
-ExecStart=/bin/bash -lc '/home/ubuntu/.rbenv/shims/bundle exec good_job start'
+WorkingDirectory=/home/ubuntu/web/work_design/current
+ExecStart=/bin/bash -lc '/home/ubuntu/.rbenv/shims/bundle exec rake solid_queue:start'
 Environment='RAILS_ENV=production'
 
 RestartSec=1
